@@ -1,0 +1,83 @@
+plugins {
+    id 'com.android.application'
+    id "com.cookpad.android.plugin.license-tools" version "1.2.8"
+}
+
+def keyStoreFile = File.createTempFile("key", null)
+keyStoreFile.deleteOnExit()
+
+if (System.getenv("SIGNING_KEY") != null) {
+    println 'key exist'
+    keyStoreFile.bytes = Base64.decoder.decode(System.getenv("SIGNING_KEY"))
+} else {
+    println 'key NOT exist'
+}
+
+android {
+    compileSdk 31
+
+    signingConfigs {
+        release {
+            storeFile keyStoreFile
+            storePassword System.getenv("KEY_STORE_PASSWORD")
+            keyAlias System.getenv("ALIAS")
+            keyPassword System.getenv("KEY_PASSWORD")
+        }
+    }
+    defaultConfig {
+        applicationId "m.co.rh.id.flashcard_flips"
+        minSdk 21
+        targetSdk 31
+        versionCode 1
+        versionName '1.0'
+        vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (System.getenv("SIGNING_KEY") != null) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+    compileOptions {
+        // Flag to enable support for the new language APIs
+        coreLibraryDesugaringEnabled true
+
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+
+    implementation project(path: ':base')
+    implementation project(path: ':timer-notification')
+    implementation project(path: ':bot')
+    implementation 'com.squareup.leakcanary:plumber-android:2.9.1'
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'org.mockito:mockito-core:3.12.4'
+    def room_version = "2.4.2"
+    androidTestImplementation "androidx.room:room-testing:$room_version"
+}
+
+project.afterEvaluate {
+    def versionCode = android.defaultConfig.versionCode
+    File changeLogTxt = new File(project.rootDir, "fastlane/metadata/android/en-US/changelogs/" + versionCode + ".txt")
+    if (changeLogTxt.exists()) {
+        File outputChangeLog = new File(project.buildDir, "changelog.txt")
+        if (!outputChangeLog.exists()) {
+            outputChangeLog.parentFile.mkdirs()
+            outputChangeLog.createNewFile()
+        }
+        outputChangeLog.bytes = changeLogTxt.bytes
+    }
+}

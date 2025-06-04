@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <LinearLayout
+        android:id="@id/container_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="@integer/orientation_portland_vertical_horizontal"
+        app:layout_constraintBottom_toTopOf="@id/button_edit"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            app:cardElevation="3dp">
+
+            <LinearLayout
+                android:id="@+id/container_content_question"
+                android:layout_width="match_parent"
+                android:background="@color/front"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/image_question"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_question"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/text_margin"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="26sp"
+                    android:background="@color/front"
+                    android:textColor="@color/text"
+                    android:fontFamily="@font/regular"
+                    tool:text="What is the answer to everything?" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_question_voice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/play_voice"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_keyboard_voice_black"
+                    app:iconTint="@color/daynight_white_black" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            app:cardElevation="3dp">
+
+            <LinearLayout
+                android:id="@+id/container_content_answer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/back"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/image_answer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_answer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/text_margin"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/bold"
+                    android:gravity="center"
+                    android:background="@color/back"
+                    android:textColor="@color/front"
+                    android:textSize="26sp"
+                    tool:text="42" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/button_exit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:backgroundTint="@color/red"
+        android:text="@string/exit"
+        android:fontFamily="@font/regular"
+        app:icon="@drawable/ic_exit_to_app_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:iconTint="@color/text"
+        android:textColor="@color/text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/container_content" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/button_menu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:backgroundTint="@color/primaryColorDark_blue"
+        app:icon="@drawable/ic_menu_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_edit"
+        app:layout_constraintStart_toEndOf="@id/button_exit"
+        app:iconTint="@color/text"
+        app:layout_constraintTop_toBottomOf="@id/container_content" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/button_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/edit"
+        android:fontFamily="@font/regular"
+        app:icon="@drawable/ic_edit_black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:iconTint="@color/text"
+        android:textColor="@color/text"
+        android:backgroundTint="@color/primaryColor_orange"
+        app:layout_constraintTop_toBottomOf="@id/container_content" />
+</androidx.constraintlayout.widget.ConstraintLayout>

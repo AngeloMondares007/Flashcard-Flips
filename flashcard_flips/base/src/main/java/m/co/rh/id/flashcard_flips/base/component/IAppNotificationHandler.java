@@ -1,0 +1,54 @@
+/*
+ *     Copyright (C) 2021 Ruby Hartono
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package m.co.rh.id.flashcard_flips.base.component;
+
+import android.content.Intent;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
+
+import io.reactivex.rxjava3.core.Flowable;
+import m.co.rh.id.flashcard_flips.base.entity.Card;
+import m.co.rh.id.flashcard_flips.base.entity.NotificationTimer;
+import m.co.rh.id.flashcard_flips.base.model.NotificationTimerEvent;
+
+public interface IAppNotificationHandler {
+    String KEY_INT_REQUEST_ID = "KEY_INT_REQUEST_ID";
+    String CHANNEL_ID_NOTIFICATION_TIMER = "CHANNEL_ID_NOTIFICATION_TIMER";
+    String GROUP_KEY_NOTIFICATION_TIMER = "GROUP_KEY_NOTIFICATION_TIMER";
+    String CHANNEL_ID_GENERAL_MESSAGE = "CHANNEL_ID_GENERAL_MESSAGE";
+    String GROUP_KEY_GENERAL_MESSAGE = "GROUP_KEY_GENERAL_MESSAGE";
+    int GROUP_SUMMARY_ID_NOTIFICATION_TIMER = 0;
+    int GROUP_SUMMARY_ID_GENERAL_MESSAGE = 1;
+
+
+    void postNotificationTimer(NotificationTimer notificationTimer, Card selectedCard);
+
+    void postGeneralMessage(String title, String content);
+
+    void removeNotification(Intent intent);
+
+    void processNotification(@NonNull Intent intent);
+
+    Flowable<NotificationTimerEvent> getTimerNotificationEventFlow();
+
+    @WorkerThread
+    void cancelNotificationSync(NotificationTimer notificationTimer);
+
+    void playVoice(Intent intent);
+}

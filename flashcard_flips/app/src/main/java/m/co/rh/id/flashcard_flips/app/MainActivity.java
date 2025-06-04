@@ -1,0 +1,136 @@
+/*
+ *     Copyright (C) 2021 Ruby Hartono
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package m.co.rh.id.flashcard_flips.app;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.net.Uri;
+import android.os.Bundle;
+
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import m.co.rh.id.flashcard_flips.R;
+import m.co.rh.id.flashcard_flips.app.provider.command.ExportImportCmd;
+import m.co.rh.id.flashcard_flips.base.BaseApplication;
+import m.co.rh.id.flashcard_flips.base.provider.RxProviderModule;
+import m.co.rh.id.flashcard_flips.base.rx.RxDisposer;
+import m.co.rh.id.alogger.ILogger;
+import m.co.rh.id.aprovider.Provider;
+
+public class MainActivity extends AppCompatActivity {
+    private static final String TAG = MainActivity.class.getName();
+    private BehaviorSubject<Boolean> mRebuildUi;
+    private Provider mActProvider;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        Provider provider = BaseApplication.of(this).getProvider();
+        mActProvider = Provider.createNestedProvider("ActivityProvider", provider, this, new RxProviderModule());
+        mRebuildUi = BehaviorSubject.create();
+        // rebuild UI is expensive and error prone, avoid spam rebuild (especially due to day and night mode)
+        mActProvider.get(RxDisposer.class)
+                .add("rebuildUI", mRebuildUi.debounce(100, TimeUnit.MILLISECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(aBoolean -> {
+                            if (aBoolean) {
+                                BaseApplication.of(this).getNavigator(this).reBuildAllRoute();
+                                // Switching to night mode didn't update window background for some reason?
+                                // seemed to occur on android 8 and below
+                                getWindow().setBackgroundDrawableResource(R.color.daynight_white_black);
+                            }
+                        })
+                );
+        getOnBackPressedDispatcher().addCallback(this,
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        BaseApplication.of(MainActivity.this)
+                                .getNavigator(MainActivity.this).onBackPressed();
+                    }
+                });
+        super.onCreate(savedInstanceState);
+        handleImportFile(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleImportFile(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mActProvider.dispose();
+        mActProvider = null;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // this is required to let navigator handle onActivityResult
+        BaseApplication.of(this).getNavigator(this).onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        BaseApplication.of(this).getNavigator(this).onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // using AppCompatDelegate.setDefaultNightMode trigger this method
+        // but not triggering Application.onConfigurationChanged
+        mRebuildUi.onNext(true);
+    }
+
+    private void handleImportFile(Intent intent) {
+        // handle open JSON file
+        String intentAction = intent.getAction();
+        if (Intent.ACTION_VIEW.equals(intentAction)) {
+            Context context = getApplicationContext();
+            Uri fileData = intent.getData();
+            mActProvider.get(ILogger.class).d(TAG, "begin import file");
+            mActProvider.get(RxDisposer.class)
+                    .add("handleImportFile_importFile",
+                            mActProvider.get(ExportImportCmd.class)
+                                    .importFile(fileData)
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe((deckModels, throwable) -> {
+                                        if (throwable != null) {
+                                            mActProvider.get(ILogger.class)
+                                                    .e(TAG, context.getString(R.string.error_failed_to_open_file)
+                                                            , throwable);
+                                        } else {
+                                            mActProvider.get(ILogger.class).i(TAG,
+                                                    context.getString(R.string.success_import_file, deckModels.size()));
+                                        }
+                                    }));
+        }
+    }
+}

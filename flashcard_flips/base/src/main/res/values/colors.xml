@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="teal_custom">#008080</color>
+    <color name="purple_200">#F44336</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#03353E</color>
+    <color name="black">#03353E</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="red">#FFFF0000</color>
+    <color name="gray_300">#E0E0E0</color>
+    <color name="gray_400">#BDBDBD</color>
+    <color name="gray_600">#757575</color>
+    <color name="gray_700">#616161</color>
+    <color name="daynight_gray_700_white">@color/gray_700</color>
+    <color name="daynight_gray_300_gray_600">@color/gray_300</color>
+    <color name="daynight_black_white">@color/black</color>
+    <color name="daynight_white_black">@color/white</color>
+
+    <color name="background">#03353E</color>
+    <color name="text">#FBFBF9</color>
+    <color name="front">#101820</color>
+    <color name="back">#F2AA4C</color>
+
+    <color name="p_red">#F44336</color>
+    <color name="Dark_red">#D32F2F</color>
+    <color name="Accent_red">#FFEBEE</color>
+    <color name="reddd">#BC544B</color>
+
+    <color name="primaryColor_blue">#118C8B</color>
+    <color name="primaryColorDark_blue">#0294a5</color>
+    <color name="primaryAccent_blue">#E3F2FD</color>
+
+    <color name="primaryColor_orange">#F2A104</color>
+    <color name="primaryColorDark_orange">#d59b2d</color>
+
+</resources>
